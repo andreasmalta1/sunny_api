@@ -5,11 +5,10 @@ from sqlalchemy.sql.sqltypes import TIMESTAMP
 try:
     from .database import Base
 except ImportError as e:
-    print(e)
     from database import Base
 
 
-class Team(Base):
+class Quote(Base):
     __tablename__ = "quotes"
 
     id = Column(Integer, primary_key=True, nullable=False)

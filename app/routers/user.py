@@ -38,6 +38,4 @@ def create_user(
     db.commit()
     db.refresh(new_user)
 
-    post_request(db, "users", request)
-
     return new_user
