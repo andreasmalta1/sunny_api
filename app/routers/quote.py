@@ -1,4 +1,5 @@
 from fastapi import status, APIRouter, HTTPException, Response, Depends
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 from typing import List, Optional
 import random
@@ -50,11 +51,18 @@ def get_quotes(
     limit: int = 10,
     skip: int = 0,
     search: Optional[str] = "",
+    character: Optional[str] = "",
+    # season: int = 0,
+    # episode: int = 0
 ):
 
     results = (
         db.query(models.Quote)
-        .filter(models.Quote.quote.contains(search))
+        .filter(
+            func.lower(models.Quote.quote).contains(search.lower()),
+            func.lower(models.Quote.character).contains(character.lower()),
+        )
+        # func.lower(User.username).contains(username.lower())
         .order_by(models.Quote.id)
         .limit(limit)
         .offset(skip)
