@@ -1,3 +1,5 @@
 env
 __pycache__
 .env
+login.json
+service_account.json
