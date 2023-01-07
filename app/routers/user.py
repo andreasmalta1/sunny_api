@@ -3,13 +3,11 @@ from sqlalchemy.orm import Session
 
 try:
     from app.database import get_db
-    from app.utils import post_request
     import app.schemas as schemas
     import app.models as models
     import app.utils as utils
 except ImportError:
     from database import get_db
-    from utils import post_request
     import schemas
     import models
     import utils

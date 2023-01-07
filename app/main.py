@@ -25,9 +25,9 @@ app = FastAPI(
 )
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
-app.include_router(auth.router)
+# app.include_router(auth.router)
 app.include_router(favicon.router)
-app.include_router(quote.router)
+# app.include_router(quote.router)
 app.include_router(user.router)
 
 origins = ["*"]
@@ -39,3 +39,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.get("/")
+def home_dir():
+    return {"home": "success"}
