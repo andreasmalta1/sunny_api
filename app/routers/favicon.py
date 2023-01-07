@@ -4,7 +4,7 @@ from fastapi.responses import FileResponse
 
 router = APIRouter(prefix="/favicon.ico")
 
-favicon_path = "./static/images/favicon/ball.ico"
+favicon_path = "./static/images/favicon/sunny.ico"
 
 
 @router.get("", include_in_schema=False)
