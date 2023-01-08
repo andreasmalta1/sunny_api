@@ -52,48 +52,136 @@ def get_quotes(
     skip: int = 0,
     search: Optional[str] = "",
     character: Optional[str] = "",
-    # season: int = 0,
-    # episode: int = 0
+    season: int = 0,
+    episode: int = 0,
 ):
 
-    results = (
-        db.query(models.Quote)
-        .filter(
-            func.lower(models.Quote.quote).contains(search.lower()),
-            func.lower(models.Quote.character).contains(character.lower()),
+    if not season and not episode:
+        results = (
+            db.query(models.Quote)
+            .filter(
+                func.lower(models.Quote.quote).contains(search.lower()),
+                func.lower(models.Quote.character).contains(character.lower()),
+            )
+            .order_by(models.Quote.id)
+            .limit(limit)
+            .offset(skip)
+            .all()
         )
-        # func.lower(User.username).contains(username.lower())
-        .order_by(models.Quote.id)
-        .limit(limit)
-        .offset(skip)
-        .all()
-    )
+        return results
 
-    return results
+    if season and episode:
+        results = (
+            db.query(models.Quote)
+            .filter(
+                func.lower(models.Quote.quote).contains(search.lower()),
+                func.lower(models.Quote.character).contains(character.lower()),
+                models.Quote.season == season,
+                models.Quote.episode == episode,
+            )
+            .order_by(models.Quote.id)
+            .limit(limit)
+            .offset(skip)
+            .all()
+        )
+        return results
+
+    if season:
+        results = (
+            db.query(models.Quote)
+            .filter(
+                func.lower(models.Quote.quote).contains(search.lower()),
+                func.lower(models.Quote.character).contains(character.lower()),
+                models.Quote.season == season,
+            )
+            .order_by(models.Quote.id)
+            .limit(limit)
+            .offset(skip)
+            .all()
+        )
+        return results
+
+    if episode:
+        results = (
+            db.query(models.Quote)
+            .filter(
+                func.lower(models.Quote.quote).contains(search.lower()),
+                func.lower(models.Quote.character).contains(character.lower()),
+                models.Quote.episode == episode,
+            )
+            .order_by(models.Quote.id)
+            .limit(limit)
+            .offset(skip)
+            .all()
+        )
+        return results
 
 
 @router.get("/random", response_model=schemas.QuoteResponse)
-def get_random_quote(db: Session = Depends(get_db)):
+def get_random_quote(
+    db: Session = Depends(get_db),
+    character: Optional[str] = "",
+    season: int = 0,
+    episode: int = 0,
+):
 
-    results = db.query(models.Quote).all()
+    if not season and not episode:
+        results = (
+            db.query(models.Quote)
+            .filter(func.lower(models.Quote.character).contains(character.lower()))
+            .all()
+        )
+
+    if season and episode:
+        results = (
+            db.query(models.Quote)
+            .filter(
+                func.lower(models.Quote.character).contains(character.lower()),
+                models.Quote.season == season,
+                models.Quote.episode == episode,
+            )
+            .all()
+        )
+
+    if season:
+        results = (
+            db.query(models.Quote)
+            .filter(
+                func.lower(models.Quote.character).contains(character.lower()),
+                models.Quote.season == season,
+            )
+            .all()
+        )
+
+    if episode:
+        results = (
+            db.query(models.Quote)
+            .filter(
+                func.lower(models.Quote.character).contains(character.lower()),
+                models.Quote.episode == episode,
+            )
+            .all()
+        )
+
     if not results:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"No teams found",
+            detail=f"No quotes found",
         )
+
     quote = random.choice(results)
 
     return quote
 
 
 @router.get("/{id}", response_model=schemas.QuoteResponse)
-def get_team(id: int, db: Session = Depends(get_db)):
+def get_quotes(id: int, db: Session = Depends(get_db)):
     quote = db.query(models.Quote).filter(models.Quote.id == id).first()
 
     if not quote:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Team with id {id} was not found",
+            detail=f"Quote with id {id} was not found",
         )
 
     return quote
@@ -118,7 +206,7 @@ def delete_quote(
     if quote == None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Team with id {id} was not found",
+            detail=f"Quote with id {id} was not found",
         )
 
     quote_query.delete(synchronize_session=False)
@@ -128,7 +216,7 @@ def delete_quote(
 
 
 @router.put("/{id}", response_model=schemas.QuoteResponse, include_in_schema=False)
-def update_team(
+def update_quote(
     id: int,
     updated_quote: schemas.QuoteCreate,
     current_user: int = Depends(oauth2.get_current_user),
@@ -147,7 +235,7 @@ def update_team(
     if quote == None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Team with id {id} was not found",
+            detail=f"Quote with id {id} was not found",
         )
 
     quote_query.update(updated_quote.dict(), synchronize_session=False)
