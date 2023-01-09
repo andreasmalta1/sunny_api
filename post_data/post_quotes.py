@@ -1,6 +1,6 @@
 import requests
-from login import login
 import gspread
+from login import login
 
 
 def post_quotes():

@@ -15,7 +15,6 @@ app = FastAPI(
     terms_of_service="",
     contact={
         "name": "Andreas Calleja",
-        "url": "",
         "email": "andreascalleja@gmail.com",
     },
     license_info={

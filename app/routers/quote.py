@@ -1,7 +1,8 @@
 from fastapi import status, APIRouter, HTTPException, Response, Depends
 from sqlalchemy import func
 from sqlalchemy.orm import Session
-from typing import List, Optional
+from typing import List
+from pydantic import create_model
 import random
 
 try:
@@ -17,6 +18,15 @@ except ImportError:
 
 
 router = APIRouter(prefix="/api/quotes", tags=["Quotes"])
+
+query_params_strings = {"quote": (str, None), "character": (str, None)}
+query_params_integers = {
+    "season": (int, 0),
+    "episode": (int, 0),
+}
+
+query_model_strings = create_model("Query", **query_params_strings)
+query_model_integers = create_model("Query", **query_params_integers)
 
 
 @router.post(
@@ -50,118 +60,59 @@ def get_quotes(
     db: Session = Depends(get_db),
     limit: int = 10,
     skip: int = 0,
-    search: Optional[str] = "",
-    character: Optional[str] = "",
-    season: int = 0,
-    episode: int = 0,
+    param_strings: query_model_strings = Depends(),
+    param_integers: query_model_integers = Depends(),
 ):
 
-    if not season and not episode:
-        results = (
-            db.query(models.Quote)
-            .filter(
-                func.lower(models.Quote.quote).contains(search.lower()),
-                func.lower(models.Quote.character).contains(character.lower()),
-            )
-            .order_by(models.Quote.id)
-            .limit(limit)
-            .offset(skip)
-            .all()
-        )
-        return results
+    param_strings_dict = param_strings.dict()
+    param_integers_dict = param_integers.dict()
+    results = db.query(models.Quote)
 
-    if season and episode:
-        results = (
-            db.query(models.Quote)
-            .filter(
-                func.lower(models.Quote.quote).contains(search.lower()),
-                func.lower(models.Quote.character).contains(character.lower()),
-                models.Quote.season == season,
-                models.Quote.episode == episode,
+    for key in param_strings_dict:
+        if param_strings_dict[key]:
+            results = results.filter(
+                func.lower(getattr(models.Quote, key)).contains(
+                    param_strings_dict[key].lower()
+                )
             )
-            .order_by(models.Quote.id)
-            .limit(limit)
-            .offset(skip)
-            .all()
-        )
-        return results
 
-    if season:
-        results = (
-            db.query(models.Quote)
-            .filter(
-                func.lower(models.Quote.quote).contains(search.lower()),
-                func.lower(models.Quote.character).contains(character.lower()),
-                models.Quote.season == season,
+    for key in param_integers_dict:
+        if param_integers_dict[key]:
+            results = results.filter(
+                getattr(models.Quote, key) == param_integers_dict[key]
             )
-            .order_by(models.Quote.id)
-            .limit(limit)
-            .offset(skip)
-            .all()
-        )
-        return results
 
-    if episode:
-        results = (
-            db.query(models.Quote)
-            .filter(
-                func.lower(models.Quote.quote).contains(search.lower()),
-                func.lower(models.Quote.character).contains(character.lower()),
-                models.Quote.episode == episode,
-            )
-            .order_by(models.Quote.id)
-            .limit(limit)
-            .offset(skip)
-            .all()
-        )
-        return results
+    results = results.order_by(models.Quote.id).limit(limit).offset(skip).all()
+
+    return results
 
 
 @router.get("/random", response_model=schemas.QuoteResponse)
 def get_random_quote(
     db: Session = Depends(get_db),
-    character: Optional[str] = "",
-    season: int = 0,
-    episode: int = 0,
+    param_strings: query_model_strings = Depends(),
+    param_integers: query_model_integers = Depends(),
 ):
 
-    if not season and not episode:
-        results = (
-            db.query(models.Quote)
-            .filter(func.lower(models.Quote.character).contains(character.lower()))
-            .all()
-        )
+    param_strings_dict = param_strings.dict()
+    param_integers_dict = param_integers.dict()
+    results = db.query(models.Quote)
 
-    if season and episode:
-        results = (
-            db.query(models.Quote)
-            .filter(
-                func.lower(models.Quote.character).contains(character.lower()),
-                models.Quote.season == season,
-                models.Quote.episode == episode,
+    for key in param_strings_dict:
+        if param_strings_dict[key]:
+            results = results.filter(
+                func.lower(getattr(models.Quote, key)).contains(
+                    param_strings_dict[key].lower()
+                )
             )
-            .all()
-        )
 
-    if season:
-        results = (
-            db.query(models.Quote)
-            .filter(
-                func.lower(models.Quote.character).contains(character.lower()),
-                models.Quote.season == season,
+    for key in param_integers_dict:
+        if param_integers_dict[key]:
+            results = results.filter(
+                getattr(models.Quote, key) == param_integers_dict[key]
             )
-            .all()
-        )
 
-    if episode:
-        results = (
-            db.query(models.Quote)
-            .filter(
-                func.lower(models.Quote.character).contains(character.lower()),
-                models.Quote.episode == episode,
-            )
-            .all()
-        )
+    results = results.all()
 
     if not results:
         raise HTTPException(
