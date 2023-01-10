@@ -14,7 +14,7 @@ def post_quotes():
     access_token = login()
     post_headers = {"Authorization": "Bearer " + access_token}
 
-    post_url = "http://127.0.0.1:8000/api/quotes/"
+    post_url = "https://itssunnyapi.com/api/quotes/"
 
     for row in values:
         post_payload = {}

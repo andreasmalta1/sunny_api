@@ -9,7 +9,7 @@ with open("login.json") as login_file:
 
 def login():
 
-    login_url = "http://127.0.0.1:8000/api/login"
+    login_url = "https://itssunnyapi.com/api/login"
     login_payload = {"username": username, "password": password}
 
     login_response = requests.post(login_url, data=login_payload)
