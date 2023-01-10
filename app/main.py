@@ -10,7 +10,7 @@ except ImportError:
 
 app = FastAPI(
     title="Sunny Info Api",
-    description="API for all things 'It's Always Sunny in Philadephia",
+    description="API for all things 'It's Always Sunny in Philadephia'",
     version="0.0.1",
     terms_of_service="",
     contact={
