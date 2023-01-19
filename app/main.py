@@ -8,11 +8,26 @@ try:
 except ImportError:
     from routers import auth, favicon, quote, user
 
+
+tags_metadata = [
+    {
+        "name": "Quptes",
+        "description": "You can get quotes from the show with information including season, episode and character that said the actual quote",
+    }
+]
+
+
+description = """  :sunny:
+The ItsSunnyAPI :sunny: provides data regarding the popular American sitcom 'It's Always Sunny in Philadephia' created by Rob McElhenney. The date provided by this api included quotes from all seasons and episodes of the show, data about each season and episode as well as data about the main characters of the show. The API is constantly updated with new data. If any data is missing or incorrect, contact me on andreascalleja@gmail.com have it fixed. 💻
+<br></br>
+Please see each get request for more information including query parameters.
+"""
+
 app = FastAPI(
     title="Sunny Info Api",
-    description="API for all things 'It's Always Sunny in Philadephia'",
-    version="0.0.1",
-    terms_of_service="",
+    description=description,
+    swagger_ui_parameters={"defaultModelsExpandDepth": -1},
+    version="1.0.0",
     contact={
         "name": "Andreas Calleja",
         "email": "andreascalleja@gmail.com",
@@ -21,6 +36,7 @@ app = FastAPI(
         "name": "Apache 2.0",
         "url": "https://www.apache.org/licenses/LICENSE-2.0.html",
     },
+    openapi_tags=tags_metadata,
 )
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
