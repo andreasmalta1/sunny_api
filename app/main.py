@@ -11,14 +11,14 @@ except ImportError:
 
 tags_metadata = [
     {
-        "name": "Quptes",
+        "name": "Quotes",
         "description": "You can get quotes from the show with information including season, episode and character that said the actual quote",
     }
 ]
 
 
-description = """  :sunny:
-The ItsSunnyAPI :sunny: provides data regarding the popular American sitcom 'It's Always Sunny in Philadephia' created by Rob McElhenney. The date provided by this api included quotes from all seasons and episodes of the show, data about each season and episode as well as data about the main characters of the show. The API is constantly updated with new data. If any data is missing or incorrect, contact me on andreascalleja@gmail.com have it fixed. 💻
+description = """
+The ItsSunnyAPI provides data regarding the popular American sitcom 'It's Always Sunny in Philadephia' created by Rob McElhenney. The date provided by this api included quotes from all seasons and episodes of the show, data about each season and episode as well as data about the main characters of the show. The API is constantly updated with new data. If any data is missing or incorrect, contact me on andreascalleja@gmail.com have it fixed. 💻
 <br></br>
 Please see each get request for more information including query parameters.
 """
